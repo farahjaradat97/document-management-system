@@ -1,0 +1,26 @@
+<script setup>
+import { computed } from 'vue';
+import { Link } from '@inertiajs/vue3';
+
+const props = defineProps({
+    href: {
+        type: String,
+        required: true,
+    },
+    active: {
+        type: Boolean,
+    },
+});
+
+const classes = computed(() =>
+    props.active
+        ? 'inline-flex bg-light-primary items-center p-2 text-sm font-medium leading-5 text-white  focus:outline-none  transition duration-150 ease-in-out'
+        : 'inline-flex items-center text-sm font-medium leading-5 text-dark-gray-900    focus:outline-none focus:text-dark-gray-700 transition duration-150 ease-in-out   p-2  hover:bg-light-gray-200'
+);
+</script>
+
+<template>
+    <Link :href="href" :class="classes">
+        <slot />
+    </Link>
+</template>

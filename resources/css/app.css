@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@mdi /font/css/materialdesignicons.css;
+
+
+i {
+    color: #A1A1AA;
+    font-size: 24px;
+}
