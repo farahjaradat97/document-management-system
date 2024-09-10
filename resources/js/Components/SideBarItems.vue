@@ -11,15 +11,25 @@ const SideBarItem = ref([
         name: "Projects",
         href: "/projects",
         icon: "mdi-view-grid-outline",
-        active : route().current('projects')
+        active : route().current('projects*'),
+
+    },
+    {
+        name: "Organizations",
+        href: "/organizations",
+        icon: "mdi-domain",
+        active : route().current('organizations*') ,
+        
     },
   
 ]);
+
 </script>
+
 <template>
-   <nav
-           
-   class="bg-white text-dark-gray-900 h-full transition-all duration-300 ease-in-out min-w-[320px]"
+
+<nav
+   class=" bg-light-gray text-dark-gray-900 h-full transition-all duration-300 ease-in-out w-[320px]"
           
         >
         

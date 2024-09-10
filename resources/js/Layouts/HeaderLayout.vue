@@ -3,16 +3,15 @@ import Dropdown from "@/Components/Dropdown.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import { usePage, router } from "@inertiajs/vue3";
 import { computed } from "vue";
-import {Link} from "@inertiajs/vue3";
+import { Link } from "@inertiajs/vue3";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
 
 //to Get the first letter from user name
 const userNameLetters = computed(() => {
-    return usePage()
-        .props.auth.user.name.split(" ")
-        .map((name) => name[0])
-        .join("")
-        .toUpperCase();
+    return (
+        usePage().props.auth.user.first_name[0] +
+        usePage().props.auth.user.last_name[0]
+    ).toUpperCase();
 });
 const logout = () => {
     router.post(route("logout"));
@@ -21,7 +20,7 @@ const logout = () => {
 
 <template>
     <header
-        class="bg-white flex justify-between border-light-gray-200 h-[65px] p-2 border-b w-full"
+        class="bg-white flex justify-between border-light-gray-200 h-[65px] p-2 border-b w-screen px-4"
     >
         <div class="flex items-center justify-start p-4 h-[64px]">
             <Link :href="route('projects')">
@@ -69,4 +68,5 @@ const logout = () => {
             </Dropdown>
         </div>
     </header>
+    <slot> </slot>
 </template>

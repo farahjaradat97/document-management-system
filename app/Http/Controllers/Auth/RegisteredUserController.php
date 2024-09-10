@@ -12,15 +12,26 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
-
+use App\Models\invitations;
+use App\RoleEnum;
 class RegisteredUserController extends Controller
 {
     /**
      * Display the registration view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('Auth/Register');
+        $invitation_token = $request->get('invitation_token');
+        $org_id = $request->get('org_id');
+        $invitation = Invitations::where([['invitation_token', '=', $invitation_token], ['org_id', '=', $org_id]])->firstOrFail();
+        return Inertia::render(
+            'Auth/Register',
+            [
+                'email' => $invitation->email,
+                'orgId' => $invitation->org_id,
+                'role' => $invitation->role,
+            ]
+        );
     }
 
     /**
@@ -31,21 +42,26 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'org_id' => ['required'],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'org_id' => $request->org_id,
+            'role' => RoleEnum::from($request->role), // Store the enum role in the DB
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('projects', absolute: false));
     }
 }

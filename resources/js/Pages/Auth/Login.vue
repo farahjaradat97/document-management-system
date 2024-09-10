@@ -31,6 +31,7 @@ const submit = () => {
 </script>
 
 <template>
+
     <GuestLayout>
         <Head title="Log in" />
 
@@ -66,7 +67,6 @@ const submit = () => {
                     <TextInput
                         id="password"
                         :message="form.errors.password"
-    
                         type="password"
                         class=" w-full"
                         v-model="form.password"

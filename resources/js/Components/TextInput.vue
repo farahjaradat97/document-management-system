@@ -29,8 +29,10 @@ const isFocused = ref(false);
         <input
             v-bind="$attrs"
             ref="input"
-            :class="message? 'border-error' : ''"
-            class="border-light-gray-300 shadow-input-shadow bg-white rounded-lg focus:border-primary focus:bg-white"
+            :class="[
+        'border-light-gray-300 shadow-input-shadow bg-white rounded-lg focus:border-primary focus:bg-white',
+        message ? 'border-rose-600' : ''
+    ]"
             :value="modelValue"
             @focus="isFocused = true"
             @input="$emit('update:modelValue', $event.target.value)"
@@ -46,7 +48,7 @@ const isFocused = ref(false);
             <i class="mdi mdi-close"> </i>
         </button> -->
     </div>
-    <p class="font-small text-error text-sm mt-2" v-if="message">
+    <p class="font-small text-rose-600 text-sm mt-2" v-if="message">
         {{ message }}
     </p>
     <p class="font-small text-light-gray-500 text-sm" v-if="hint">
