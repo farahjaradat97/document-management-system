@@ -5,12 +5,19 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-
+const props = defineProps({
+    orgId:Number,
+    email:String,
+    role:String
+})
 const form = useForm({
-    name: '',
-    email: '',
+    first_name: '',
+    last_name:'',
+    email: props.email,
     password: '',
     password_confirmation: '',
+    org_id :props.orgId,
+    role:props.role
 });
 
 const submit = () => {
@@ -25,21 +32,36 @@ const submit = () => {
         <Head title="Register" />
 
         <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
-
-                <TextInput
-                    id="name"
-                    type="text"
-                    class="mt-1 block w-full"
-                    v-model="form.name"
-                    required
-                    autofocus
-                    autocomplete="name"
-                />
-
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
+            <div class="flex justify-between gap-2">
+                <div>
+                    <InputLabel for="firstName" value="First Name" />
+    
+                    <TextInput
+                        id="firstName"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.first_name"
+                        required 
+                        autofocus
+                    />
+    
+                    <InputError class="mt-2" :message="form.errors.name" />
+                </div>
+                <div>
+                    <InputLabel for="lastName" value="Last Name" />
+    
+                    <TextInput
+                        id="lastName"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.last_name"
+                        required
+                        autofocus
+                    />
+    
+                    <InputError class="mt-2" :message="form.errors.name" />
+                </div>
+                </div>
 
             <div class="mt-4">
                 <InputLabel for="email" value="Email" />

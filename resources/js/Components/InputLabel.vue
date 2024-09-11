@@ -7,8 +7,8 @@ defineProps({
 
 <template>
     <label 
-    :class="error ? 'text-error' :''"
-    class="block font-medium text-sm text-dark-gray-700 ">
+    :class="error ? 'text-rose-600' :''"
+    class="block font-medium text-sm text-dark-gray-700 mb-2">
         <span v-if="value">{{ value }}</span>
         <span v-else><slot /></span>
     </label>

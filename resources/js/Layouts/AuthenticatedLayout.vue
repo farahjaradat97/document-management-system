@@ -3,23 +3,32 @@ import { ref } from "vue";
 import { Head } from "@inertiajs/vue3";
 import HeaderLayout from "./HeaderLayout.vue";
 import SideBarItems from "@/Components/SideBarItems.vue";
+import BreadCrumbs from "@/Components/BreadCrumbs.vue";
 defineProps({
     title: String,
+    breadCrumbs:Array,
+    sideBar:{
+        type:Boolean,
+        default:true,
+        required:false
+    }
 });
+
 </script>
 
 <template>
-    <div>
-        <Head :title="title" />
-        <div class="border">
-            <HeaderLayout />
-        </div>
-        <div class="flex min-h-screen">
-            <SideBarItems />
-            <main class="flex-1 bg-light-gray">
-                <div class="px-8 py-6">
+    <Head :title="title" />
+    <HeaderLayout />
+        <div class="flex min-h-screen  bg-light-gray  ">
+            <SideBarItems
+            v-if="sideBar"
+            />
+            <main class="mx-auto bg-light-gray  h-full w-full px-8 py-6  md:px-6 lg:px-8 max-w-7xl">
+
+                <div class="pb-6" >
                     <div class="flex justify-between gap-3 items-start flex-col sm:flex-row sm:items-center">
                         <p class="text-3xl font-bold">
+                            <BreadCrumbs :crumbs="breadCrumbs" />
                             {{ title }}
                         </p>
                         <slot name="action" />
@@ -28,5 +37,4 @@ defineProps({
                 <slot name="content" />
             </main>
         </div>
-    </div>
 </template>

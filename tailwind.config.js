@@ -18,7 +18,7 @@ export default {
             colors: {
                 primary: '#0056D2',
                 'light-primary':'#1D75E5', //for hover 
-                'light-gray': '#F3F4F6', // for gray background,
+                'light-gray': '#F9FAFB', // for gray background,
                 'light-gray-50':'#F9FAFB',
                 'light-gray-200': '#E5E7EB',
                 'light-gray-300': '#D1D5DB',
@@ -37,7 +37,9 @@ export default {
             boxShadow: {
                 'input-shadow': '0px 1px 3px 0px #00000012',
                 'btn-shadow':' 0px 1px 3px 0px #00000029',
-                
+                'modal-shadow':'0px 3px 8px 0px #00000024',
+               'table-shadow':' 0px 1px 3px 0px #00000012'
+            
             }
            
         },

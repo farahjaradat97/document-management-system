@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, watch } from 'vue';
-
+import PrimaryButton from './PrimaryButton.vue';
 const props = defineProps({
     show: {
         type: Boolean,
@@ -14,9 +14,10 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    title:String
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close' ,'update']);
 
 watch(
     () => props.show,
@@ -60,9 +61,9 @@ const maxWidthClass = computed(() => {
 </script>
 
 <template>
-    <Teleport to="body">
+     <Teleport to="body">
         <Transition leave-active-class="duration-200">
-            <div v-show="show" class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50" scroll-region>
+            <div v-show="show" class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50">
                 <Transition
                     enter-active-class="ease-out duration-300"
                     enter-from-class="opacity-0"
@@ -86,10 +87,19 @@ const maxWidthClass = computed(() => {
                 >
                     <div
                         v-show="show"
-                        class="mb-6 bg-white dark:bg-gray-800 rounded-lg overflow-hidden shadow-xl transform transition-all sm:w-full sm:mx-auto"
+                        class="bg-white rounded-lg overflow-hidden shadow-xl transform transition-all w-full mx-auto"
                         :class="maxWidthClass"
+                        style="grid-column-start: 1; grid-row-start: 2; margin-top: 10vh;"
                     >
-                        <slot v-if="show" />
+                        <div class="px-4 py-3 border-b border-light-gray-200 min-h-[55px]">
+                            <h3 class="text-xl font-bold text-dark-gray-900">{{ title }}</h3>
+                          
+                        </div>
+                        <div class="">
+                            <slot />
+                        </div>
+
+                       
                     </div>
                 </Transition>
             </div>
