@@ -27,7 +27,7 @@ const openCreateOrgModal = ref(false);
 const nameInput = ref(null);
 
 const addOrganization = () => {
-    form.post(route("admin.store"), {
+    form.post(route("organizations.create"), {
         onSuccess: () => {
             openCreateOrgModal.value = false;
             form.reset();

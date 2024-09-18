@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
-
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -32,7 +35,12 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-
+        $plainToken= Str::random(60);
+        $hashedToken = Hash::make($plainToken); 
+        $user = $request->user();
+        $user->api_token = $hashedToken;
+        $user->save();
+        Cookie::queue('api_token', $plainToken, 0,'/',null,false,false);
         return redirect()->intended(route('projects', absolute: false));
     }
 
