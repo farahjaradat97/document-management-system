@@ -7,10 +7,14 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
-
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 class AuthenticatedSessionController extends Controller
 {
     /**
@@ -32,10 +36,9 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
-
+       
         return redirect()->intended(route('projects', absolute: false));
     }
-
     /**
      * Destroy an authenticated session.
      */

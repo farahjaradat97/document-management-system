@@ -26,12 +26,12 @@ defineProps({
 
 <template>
     <button v-bind="$attrs"
-        :class="[outlined ? 'bg-white border-light-gray-500 disabled:hover:bg-white text-dark-gray-800  hover:bg-light-gray-200' : 'bg-primary text-white hover:bg-light-primary disabled:hover:bg-primary ']"
+        :class="[outlined ? 'bg-white border-light-gray-500 disabled:hover:bg-white text-dark-gray-800  hover:bg-light-gray-200' : 'bg-primary text-white hover:bg-light-primary disabled:hover:bg-primary ' , ]"
         :type="type"
-        class="flex justify-around gap-2 px-4  items-center shadow-btn-shadow rounded-lg items-center py-4 text-sm  font-medium capitlize  disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150 min-w-[70px] max-h-[36px]">
+        class="flex items-center justify-around gap-2 px-4  items-center shadow-btn-shadow rounded-lg items-center py-4 text-sm  font-medium capitlize  disabled:opacity-50 disabled:cursor-not-allowed transition ease-in-out duration-150 min-w-[70px] max-h-[36px]">
      
         <div>
-            <i v-if="leftIcon" :class="`mdi ${leftIcon}`">
+            <i v-if="leftIcon" :class="`mdi ${leftIcon} text-[18px]`">
 
             </i>
             <slot />

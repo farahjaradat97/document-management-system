@@ -29,7 +29,7 @@ const SideBarItem = ref([
 <template>
 
 <nav
-   class=" bg-light-gray text-dark-gray-900 h-full transition-all duration-300 ease-in-out w-[320px]"
+   class=" bg-light-white text-dark-gray-900 h-screen transition-all duration-300 ease-in-out w-[320px]"
           
         >
         

@@ -6,8 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
@@ -52,4 +53,26 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Organization::class,'org_id');
     }
+     // JWTSubject Methods
+
+    /**
+     * Get the identifier that will be stored in the JWT
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey(); 
+    }
+
+
+    public function getJWTCustomClaims(): array
+    {
+        return [
+            'id'=> $this->id,
+            'usr'=>$this->first_name
+
+        ];
+    }
+
 }

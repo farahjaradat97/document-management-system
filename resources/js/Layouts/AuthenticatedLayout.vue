@@ -28,8 +28,8 @@ defineProps({
                 <div class="pb-6" >
                     <div class="flex justify-between gap-3 items-start flex-col sm:flex-row sm:items-center">
                         <p class="text-3xl font-bold">
-                            <BreadCrumbs :crumbs="breadCrumbs" />
                             {{ title }}
+                            <BreadCrumbs class='mt-3':crumbs="breadCrumbs" />
                         </p>
                         <slot name="action" />
                     </div>
