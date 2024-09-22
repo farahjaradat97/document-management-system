@@ -1,5 +1,4 @@
-FROM richarvey/nginx-php-fpm:8.2
-
+FROM richarvey/nginx-php-fpm:latest
 COPY . .
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
