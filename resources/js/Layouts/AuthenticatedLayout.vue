@@ -20,14 +20,12 @@ defineProps({
     <Head :title="title" />
     <HeaderLayout />
         <div class="flex min-h-screen  bg-light-gray  ">
-            <SideBarItems
-            v-if="sideBar"
-            />
-            <main class="mx-auto bg-light-gray  h-full w-full px-8 py-6  md:px-6 lg:px-8 max-w-7xl">
+          
+            <main class="mx-auto bg-light-gray  h-full w-full px-8 py-6  md:px-6 lg:px-8 ">
 
                 <div class="pb-6" >
                     <div class="flex justify-between gap-3 items-start flex-col sm:flex-row sm:items-center">
-                        <p class="text-3xl font-bold">
+                        <p class="text-3xl font-bold w-full">
                             {{ title }}
                             <BreadCrumbs class='mt-3':crumbs="breadCrumbs" />
                         </p>

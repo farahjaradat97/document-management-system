@@ -13,6 +13,10 @@ class File extends Model
     // to use the kylone package node methode 
     use NodeTrait;
     use HasFactory;
+    protected $fillable = [ 'related_files','path','name', 'created_by','date','is_folder','mime','size','reference_number','subject','updated_by','project_id','parent_id'];
+    protected $casts = [
+        'related_files' => 'array', 
+    ];
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
@@ -61,4 +65,23 @@ class File extends Model
             return null;
     }
 
+    public function transformRelatedFiles(): array
+    {
+        if (is_array($this->related_files)) {
+            return array_map(function ($refnum) {
+                // Fetch the file record based on the reference number
+                $file = File::where('reference_number',  (string) $refnum)->first();
+
+                return [
+                    'refnum' => $refnum,
+                    'name'=>  $file ? $file->name : $refnum, 
+                    'path' => $file ? $file->path : null, // Get the path if the file exists
+                ];
+            }, $this->related_files);
+        }
+
+        return [];
+        
+
+    }
 }

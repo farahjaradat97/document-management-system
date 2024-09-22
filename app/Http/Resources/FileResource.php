@@ -24,13 +24,17 @@ class FileResource extends JsonResource
             "project_id" => $this->is_folder,
             "mime" => $this->mime,
             "size" => $this->get_file_size(),
-            "refrence_number" => $this->refrence_number,
+            "reference_number" => $this->reference_number,
             "subject" => $this->subject,
+            "related_files" => $this->transformRelatedFiles(),  // Use a method to transform related files
             "date" =>$this-> get_date_format(),
             "created_at" => $this->created_at->diffForHumans(),
             "updated_at" => $this->updated_at->diffForHumans(),
             "created_by" => $this->user->first_name,
             "updated_by" =>$this->user->first_name,
             
+
         ];    }
+
+
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import axios from "axios";
 import InputError from "../InputError.vue";
 const props = defineProps({
@@ -14,7 +14,8 @@ const props = defineProps({
     requiredError:{
       type:Boolean,
       default:false
-    }
+    },
+    file:Object
 });
 const errorMessage = ref(null);
 const file = ref(null);
@@ -115,6 +116,12 @@ watch(
         }
     }
 );
+onMounted(()=>{
+    
+    if(props.file){
+        file.value=props.file
+    }
+})
 </script>
 
 <template>
@@ -171,7 +178,6 @@ watch(
                 </svg>
                 <span class="ml-2 text-gray-600">Uploading...</span>
             </div>
-
             <div v-if="file && !loading" class="mt-4">
                 <div
                     class="border p-2 rounded-lg flex items-center justify-between w-full"

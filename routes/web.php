@@ -20,14 +20,21 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects', [ProjectController::class, 'index'])->name('projects');
     Route::post('/projects', [ProjectController::class, 'store'])->name('projects.create');
     Route::patch('/projects', [ProjectController::class, 'update'])->name('projects.update');
-    Route::get('/projects/{id}/upload', [FileController::class, 'showUploadForm'])
+    Route::get('/projects/{id}/upload/create', [FileController::class, 'showUploadForm'])
         ->name('projects.showUploadFormForRoot');
-    Route::get('/projects/{id}/{folders?}/upload', [FileController::class, 'showUploadForm'])
+    Route::get('/projects/{id}/{folders?}/upload/create', [FileController::class, 'showUploadForm'])
         ->where('folders', '.*')
         ->name('projects.showUploadForm');
-    Route::post('/projects/{id}/{folders?}/upload', [FileController::class, 'uploadFile'])
+    Route::post('/projects/{id}/{folders?}/upload/create', [FileController::class, 'uploadFile'])
         ->where('folders', expression: '.*')
         ->name('projects.uploadFile');
+    Route::get('/projects/{id}/{folders?}/upload/{fileId}/edit', [FileController::class, 'showUploadForm'])
+        ->where('folders', '.*')
+        ->name('projects.showEditForm');
+        Route::put('/projects/{id}/{folders?}/upload/{fileId}/edit', [FileController::class, 'updateFile'])
+        ->where('folders', '.*')
+        ->name('projects.updateFile');
+        
     Route::get('/projects/{id}/{folders?}', [FileController::class, 'index'])
         ->where('folders', expression: '(.*)')
         ->name('projects.folder');

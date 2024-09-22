@@ -40,7 +40,7 @@ class StoreFileRequest extends FormRequest
                 'date',
             ],
          
-            'refrence_number' => [
+            'reference_number' => [
                 'required',
                 'string',
             ],
