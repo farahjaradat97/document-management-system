@@ -34,7 +34,7 @@ class File extends Model
         parent::boot();
     
         static::creating(function ($model) {
-            if (!$model->path) {
+            if (!$model->path ) {
                 if ($model->parent) {
                     $model->path = (!$model->parent->isRoot() ? $model->parent->path . '/' : '') . Str::slug($model->name);
                 }

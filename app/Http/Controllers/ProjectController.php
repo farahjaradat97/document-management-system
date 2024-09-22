@@ -7,23 +7,28 @@ use App\Models\Project;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Validation\Rule;
-use Inertia\Response;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Http\RedirectResponse;
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         //Get the current user orgId
         $userOrgId = auth()->user()->org_id;
+        $projects = Project::where('org_id', $userOrgId);
+        $search = $request->get('search');
+        if ($search) {
+            $projects->where('name', 'like', "%$search%");
+        }
+        // get proje$value = Cookie::get('jwt_token');cts for that organization
+        $projects = ProjectResource::collection($projects->get());
 
-        // get projects for that organization
-        $projects = Project::where('org_id', $userOrgId)->get();
-        $projects = ProjectResource::collection($projects);
 
-        
         return Inertia::render(
             'Projects/Projects',
             [
@@ -65,7 +70,6 @@ class ProjectController extends Controller
         ]);
         // Create a new organization with the validated data
         $project = Project::create($validated);
-
         // make the project root file to start uplode and create folder and subfolder or files into this project 
         $file = new File();
         $file->name = $project->name;
@@ -100,7 +104,7 @@ class ProjectController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Project $project): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => [
@@ -109,8 +113,12 @@ class ProjectController extends Controller
                 'max:255',
 
             ],
+          
         ]);
-        $project = Project::findOrFail($project->id,'id' );
+
+        $id = $request->id;
+
+        $project = Project::findOrFail($id);
         $project->update($validated);
 
         // Update the project with the validated data

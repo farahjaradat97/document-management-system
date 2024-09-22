@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreFileRequest;
 use App\Models\Project;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 use App\Models\File;
 use Illuminate\Http\Request;
+use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use App\Http\Resources\FileResource;
 use Storage;
 class FileController extends Controller
@@ -17,6 +20,13 @@ class FileController extends Controller
      */
     public function index(Request $request, $projectId, $folder = null)
     {
+        //generate api token for search to 
+        $user = Auth::user();
+        if (!$user->api_token) {
+            $token = JWTAuth::fromUser($user);
+            $user->api_token = $token;
+            $user->save();
+        }
         // find the folder that matches the given path within the project or get the root 
         $search = $request->get('search');
         $folder = $this->getParent($folder, $projectId);
@@ -28,7 +38,7 @@ class FileController extends Controller
             ->select('files.*')
             ->where('project_id', $projectId)
             ->where('_lft', '!=', 1);
-         if ($search) {
+        if ($search) {
             $files->where('name', 'like', "%$search%");
         } else {
             $files->where('parent_id', $folder->id);
@@ -49,6 +59,7 @@ class FileController extends Controller
 
         return Inertia::render('Projects/Files', [
             'files' => $files,
+            'api_token' => $user->api_token,
             'projectName' => $projectName->name,
             'folders' => $folder,
             'projectId' => $projectId,
@@ -110,6 +121,43 @@ class FileController extends Controller
         // The appendNode() method from the Kalnoy NestedSet package
 
         $parent->appendNode($file);
+    }
+
+    public function updateFolder(Request $request, $projectId)
+    {
+        $request->validate([
+            'name' => 'required',
+        ]);
+        $id = $request->id;
+        $parent = $request->parent;
+
+      // Check if a parent folder is specified
+      if (!$parent) {
+        //If no parent Id is provided  ,that mean it's not a subfolder so get the root folder for the given project .
+        $parent = $this->getRoot($projectId);
+
+    } else {
+        // If a parent id is provided find the parent folder by Id 
+        $parent = File::where('id', $parent)
+            ->where('project_id', $projectId)
+            ->firstOrFail();
+    }
+        // Retrieve the folder by its ID
+        $folder = File::where('id', $id)
+            ->where('project_id', $projectId)
+            ->firstOrFail();
+            if ($parent->isRoot()) {
+                $folder->path = Str::slug($request->name);
+            } else {
+                $folder->path = $parent->path . '/' . Str::slug($request->name);
+            }
+
+        $folder->name = $request->name;
+        $folder->updated_by = auth()->user()->id;
+        $folder->update();
+
+
+
     }
 
     public function showUploadForm($projectId, $folder = null)

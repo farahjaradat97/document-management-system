@@ -14,7 +14,6 @@
         <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet" />
         <!-- Icons -->
         <link rel="stylesheet" href="https://cdn.materialdesignicons.com/6.4.95/css/materialdesignicons.min.css">
-        <script src="https://unpkg.com/vue-cookies@1.8.4/vue-cookies.js"></script>
 
         <!-- Scripts -->
         @routes

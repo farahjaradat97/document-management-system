@@ -3,34 +3,36 @@
 @tailwind utilities;
 @mdi /font/css/materialdesignicons.css;
 
-
-i {
-    color: #A1A1AA;
-    font-size: 24px;
-    font-weight: 200
-};
-/* global.css */
 @layer components {
-    .table {
-        @apply min-w-full border  border-light-gray-300 shadow-table-shadow;
-    }
-  
-    .table thead {
-      @apply  max-h-[36px] bg-light-gray-50 border border-light-gray-200  rounded-lg  text-dark-gray-900 px-4 text-sm;
-    }
-    .table thead tr {
-        @apply h-[36px];
-      }
-    .table th {
-      @apply max-h-[36px] text-sm   rounded-lg  font-medium text-gray-900 px-6 py-4 text-left;
-    }
-  
-    .table tbody tr {
-      @apply hover:bg-gray-50 bg-white;
-    }
-  
-    .table td {
-      @apply text-sm font-medium text-gray-900 px-6 py-4 whitespace-nowrap;
-    }
+  table {
+    @apply min-w-full border border-light-gray-300 shadow-table-shadow overflow-hidden border-separate border-spacing-0 rounded-lg;
   }
   
+  table thead {
+    @apply bg-light-gray-50; /* Apply background color only */
+  }
+
+  table thead tr {
+    @apply h-[36px] ; /* Add border to the bottom of the thead tr */
+  }
+
+  th {
+    @apply h-[36px] text-sm font-semibold	 text-dark-gray-950 px-6 py-4 text-left border-b border-light-gray-200; 
+  }
+
+  table tbody tr {
+    @apply hover:bg-gray-50 bg-white text-dark-gray-950   border-b border-light-gray-200;
+  }
+
+
+  table td {
+    @apply text-sm font-medium text-gray-900 px-6 py-4 whitespace-nowrap border-b border-light-gray-200;
+  }
+}
+
+/* Additional global styles */
+i {
+  color: #A1A1AA;
+  font-size: 24px;
+  font-weight: 200;
+}

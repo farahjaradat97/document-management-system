@@ -4,17 +4,27 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { computed, ref, onMounted } from "vue";
 import Modal from "@/Components/Modal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import { useForm, router, Head, Link } from "@inertiajs/vue3";
-import Cookies from 'js-cookie';
-
+import Toaster from "@/Components/Toaster.vue";
+import {  router, Head, Link } from "@inertiajs/vue3";
+import SearchBarForm from "@/Components/SearchBarForm.vue";
+import NoDataFound from "@/Components/NoDataFound.vue";
+import CreateOrUpdateFolder from "@/Components/Projects/CreateOrUpdateFolder.vue";
 const props = defineProps({
     files: Object,
     folders: Object,
     projectId: String,
     ancestors: Object,
     projectName: String,
+    api_token: String,
 });
+
+// Varaibles
+let params = new URLSearchParams(window.location.search);
+const search = ref(params.get("search"));
+const openCreateFolderModal = ref(false);
+const folderToEdit = ref(null);
+const showToaster = ref(false);
+const toasterMessage = ref("");
 const crumbs = computed(() => {
     const allProject = [
         {
@@ -24,23 +34,22 @@ const crumbs = computed(() => {
     ];
     return [...allProject, ...props.ancestors.data];
 });
-const form = useForm({
-    name: "",
-    parent: null,
-});
 
-const openCreateFolderModal = ref(false);
-const createFolder = () => {
-    form.parent = props.folders.data.id;
 
-    form.post(route("projects.createFolder", props.projectId), {
-        onSuccess: () => {
-            openCreateFolderModal.value = false;
-            form.reset();
-        },
-        onFinish: () => form.reset(),
-    });
+
+//Functions
+
+// Function to open the model tocreate or update the project
+const openCreateFolderModalFun = (folder) => {
+    openCreateFolderModal.value = true;
+    folderToEdit.value = folder;
 };
+const handelToasterMessage = (event) => {
+    showToaster.value = true;
+    toasterMessage.value = event;
+    // The reset method resets the form fields to their initial state, while the clearErrors method clears any validation errors if present.
+};
+ //Navigate To folder page 
 const openFolder = (file) => {
     if (!file.is_folder) {
         return;
@@ -52,40 +61,14 @@ const openFolder = (file) => {
         router.visit(url);
     }
 };
-const magicSearch = ref(false)
-const search = ref('')
-let params = new URLSearchParams(window.location.search)
-const cookie =ref()
-const handelSearch = async () => {
-    if (!magicSearch.value) {
-
-        params.set('search', search.value)
-        router.get(window.location.pathname + '?' + params.toString())
-        search.value = params.get('search');
-    } else {
-       const response =await  axios.post('http://127.0.0.1:8000/search' ,{search:search.value},{
-        headers: {
-          'Authorization': `Bearer ${ Cookies.get('api_token')}`
-        }
-
-       })
-       console.log(response);
-
-
-    }
-
-}
-onMounted(() => {
-    search.value = params.get('search')
-})
 </script>
 <template>
-   
     <Head :title="projectName" />
+
     <AuthenticatedLayout :title="projectName" :bread-crumbs="crumbs">
         <template #action>
             <div class="flex justify-end gap-2">
-                <PrimaryButton @click="openCreateFolderModal = true">
+                <PrimaryButton @click="openCreateFolderModalFun(null)">
                     Create Folder</PrimaryButton
                 >
                 <Link
@@ -107,43 +90,21 @@ onMounted(() => {
             </div>
         </template>
         <template #content>
-            <div class="relative w-full items-center gap-2">
-                <TextInput
-                    type="text"
-                    class="block w-full mb-3"
-                    :class="
-                        magicSearch
-                            ? 'placeholder:text-primary border-primary'
-                            : 'placeholder:text-gray-400 border-gray-300'
-                    "
-                    v-model="search"
-                    @keyup.enter.prevent="handelSearch()"
-                    :placeholder="
-                        magicSearch
-                            ? 'Search with AI'
-                            : 'Search for files and folders'
-                    "
-                />
-                <button
-                    type="button"
-                    @click="magicSearch = !magicSearch"
-                    class="absolute inset-y-0 right-0 flex items-center pr-3"
-                >
-                    <i
-                        :class="
-                            magicSearch
-                                ? 'mdi mdi-magic-staff text-primary'
-                                : ' mdi mdi-magic-staff text-gray'
-                        "
-                    >
-                    </i>
-                </button>
-            </div>
-
-            <div v-if="files?.data?.length" class="w-full">
-                <table class="table">
+            <Toaster
+                :message="toasterMessage"
+                v-if="showToaster"
+                type="success"
+            >
+            </Toaster>
+            <div class="w-full">
+                <table v-if="files?.data?.length || search">
                     <thead>
-                        <tr>
+                        <tr rowspan="12" class="justify-end bg-white">
+                            <th colspan="12" class="font-medium">
+                                <SearchBarForm />
+                            </th>
+                        </tr>
+                        <tr v-if="files.data.length || !search">
                             <th>Name</th>
                             <th>Subject</th>
                             <th>Refrence Number</th>
@@ -151,11 +112,11 @@ onMounted(() => {
                             <th v-if="search">Location</th>
                             <th>Size</th>
                             <th>Last Modified</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
-                            class="border-b transition duration-300 ease-in-out hover:bg-blue-100 cursor-pointer"
                             @dblclick="openFolder(file)"
                             v-for="file of files?.data"
                             :key="file.id"
@@ -175,9 +136,9 @@ onMounted(() => {
                                     >
                                     </i>
                                     <p
-                                        class="text-lg font-semiBold text-dark-gray-900"
+                                        class="text-lg capitalize	 font-semiBold text-dark-gray-900"
                                     >
-                                        {{ file.name }}
+                                        {{ file.name}}
                                     </p>
                                 </div>
                             </td>
@@ -199,49 +160,60 @@ onMounted(() => {
                             <td>
                                 {{ file.updated_at ?? "-" }}
                             </td>
+                            <td
+                            >
+                                <div
+                                v-if="file.is_folder"
+
+                                    class="flex items-center gap-1 text-primary flex justify-center font-semibold text-sm"
+                                    @click.stop="openCreateFolderModalFun(file)"
+                                >
+                                    <i
+                                        class="mdi mdi-square-edit-outline cursor-pointer text-primary"
+                                    ></i>
+                                    <span
+                                        class="hover:underline cursor-pointer"
+                                    >
+                                        Edit
+                                    </span>
+                                </div>
+                            </td>
                         </tr>
                     </tbody>
+                    <tr
+                        v-if="!files?.data.length && search"
+                        rowspan="12"
+                        class="justify-end bg-white"
+                    >
+                        <th colspan="12" class="font-medium">
+                            <NoDataFound message="No results found " />
+                        </th>
+                    </tr>
                 </table>
-            </div>
-            <div
-                v-else
-                class="flex flex-col items-center w-full p-2 rounded-lg"
-            >
-                <i class="mdi mdi-progress-close text-primary"> </i>
-                <p class="font-bold text-lg text-dark-gray-900">
-                    No record found
-                </p>
+                <div v-else>
+                    <NoDataFound
+                        class="border border-light-gray-200"
+                        message="No Folders or Files have been created yet."
+                    />
+                </div>
             </div>
         </template>
     </AuthenticatedLayout>
 
     <Modal
-        title=" Create Folder"
+    :title="folderToEdit ? 'Update Folder' : 'Create Folder'"
+
         max-width="md"
         :show="openCreateFolderModal"
         @close="openCreateFolderModal = false"
     >
-        <form @submit.prevent="createFolder">
-            <div class="p-4">
-                <div>
-                    <InputLabel for="name" value="name" />
+        <CreateOrUpdateFolder
+        @showToaster="handelToasterMessage"
 
-                    <TextInput
-                        id="name"
-                        type="text"
-                        class="w-full"
-                        v-model="form.name"
-                        required
-                        :message="form.errors.name"
-                        autofocus
-                    />
-                </div>
-            </div>
-            <div class="border-t border-light-gray-200 min-h-[55px] mt-3">
-                <div class="p-4 py-3">
-                    <PrimaryButton type="submit"> Save</PrimaryButton>
-                </div>
-            </div>
-        </form>
+            :project-id="projectId"
+            @close="openCreateFolderModal = false"
+            :folder="folderToEdit"
+            :parent-folder="folders.data"
+        />
     </Modal>
 </template>

@@ -7,56 +7,59 @@ import { onMounted, watch } from "vue";
 
 //varaibles
 const props = defineProps({
-    project: Object,
-    orgId: Number,
+    folder: Object,
+    projectId: String,
+    parentFolder:Object
 });
 const form = useForm({
-    name: props.project?.name ?? "",
-    org_id: props.orgId,
-    id: null,
+    name: props.folder?.name ?? "",
+    parent: null,    id: null,
 });
 const emit = defineEmits(["showToaster", "close"]);
 
 //Functions
 
-// Function to create new project or update exists project
-const createProject = () => {
-    if (props.project) {
-        form.patch(route("projects.update", props.project.id), {
-            onSuccess: () => {
+// Function to create new folder or update exists folder
+const createOrUpdateFolder = () => {
+    form.parent = props.parentFolder.id;
+    if (props.folder) {
+
+    form.patch(route("projects.updateFolder", props.projectId), {
+        onSuccess: () => {
                 
                 form.reset();
-                emit('close',true)
-                emit("showToaster", "Project updated successfully!");
+                emit('close')
+                emit("showToaster", "Folder updated successfully!");
             },
-            onFinish: () => form.reset(),
-        });
+        onFinish: () => form.reset(),
+    });
     } else {
-        form.post(route("projects.create"), {
+        form.post(route("projects.createFolder", props.projectId), {
             onSuccess: () => {
                 form.reset();
-                emit("showToaster", "Project created successfully!");
-                emit('close',true)
+                emit("showToaster", "Folder created successfully!");
+                emit('close')
             },
-            onFinish: () => form.reset(),
-        });
+        onFinish: () => form.reset(),
+    });
     }
 };
 watch(
-    () => props.project,
+    () => props.folder,
     (newValue) => {
-        if (props.project) {
-            form.name = props.project.name;
-            form.id = props.project.id;
+        if (props.folder) {
+            form.name = props.folder.name;
+            form.id=props.folder.id
         } else {
             form.name = "";
-            form.id = null;
+            form.id=null
+
         }
     }
 );
 </script>
 <template>
-    <form @submit.prevent="createProject">
+    <form @submit.prevent="createOrUpdateFolder">
         <div class="p-4">
             <div>
                 <InputLabel for="name" value="Name" :error="form.errors.name" />

@@ -4,53 +4,39 @@ import { Head, router, useForm } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { ref } from "vue";
+import Toaster from "@/Components/Toaster.vue";
 import CreateOrUpdateProjectForm from "@/Components/Projects/CreateOrUpdateProjectForm.vue";
 import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
-import { Link } from "@inertiajs/vue3";
+import NoDataFound from "@/Components/NoDataFound.vue";
+import SearchBarForm from "@/Components/SearchBarForm.vue";
 const props = defineProps({
     projects: Object,
     orgId: Number,
 });
-
-const openCTeateProjectModal = ref(false);
+// Varaibles
+let params = new URLSearchParams(window.location.search);
+const search = ref(params.get("search"));
 const projectToEdit = ref(null);
-const form = useForm({
-    name: "",
-    org_id: props.orgId,
-});
-// Function to open the model tocreate or update the project
 const openCreateProjectModal = ref(false);
+const showToaster = ref(false);
+const toasterMessage = ref("");
 
+//Functions
+
+// Function to open the model tocreate or update the project
 const openCreateProjectModalFun = (project) => {
     openCreateProjectModal.value = true;
     projectToEdit.value = project;
-    form.name = project?.name;
 };
 
-// Function to create new project or update exists project
-const createProject = () => {
-    if (projectToEdit.value) {
-        form.patch(route("projects.update"), {
-            project: projectToEdit.value.id,
-        });
-    } else {
-        form.post(route("projects.create"), {
-            onSuccess: () => {
-                openCreateProjectModal.value = false;
-                form.reset();
-            },
-            onFinish: () => form.reset(),
-        });
-    }
-};
-const closeModalAndResetFrom = () => {
-    openCreateProjectModal.value = false;
-
+//handle modal
+const handelToasterMessage = (event) => {
+    showToaster.value = true;
+    toasterMessage.value = event;
     // The reset method resets the form fields to their initial state, while the clearErrors method clears any validation errors if present.
-    form.reset();
-    form.clearErrors();
 };
+
+//Navigate To project folders and files page
 const goToproject = (project) => {
     router.visit(route("projects.folder", project.id));
 };
@@ -64,10 +50,21 @@ const goToproject = (project) => {
             >
         </template>
         <template #content>
-            <div v-if="projects.data.length" class="w-full">
-                <table class="table">
+            <Toaster
+                :message="toasterMessage"
+                v-if="showToaster"
+                type="success"
+            >
+            </Toaster>
+            <div class="w-full">
+                <table v-if="projects.data.length || search">
                     <thead>
-                        <tr>
+                        <tr rowspan="12" class="justify-end bg-white">
+                            <th colspan="12" class="font-medium">
+                                <SearchBarForm />
+                            </th>
+                        </tr>
+                        <tr v-if="projects.data.length || !search">
                             <th>Name</th>
                             <th>Last Modified</th>
                             <th></th>
@@ -85,50 +82,59 @@ const goToproject = (project) => {
                             <td>
                                 {{ project.updated_at }}
                             </td>
-                            <td>
-                                <i
-                                    class="mdi mdi-pencil cursor-pointer"
-                                    @click.stop
-                                ></i>
+                            <td
+                                class="text-primary flex justify-center font-semibold text-sm"
+                            >
+                                <div
+                                    class="flex items-center gap-1"
+                                    @click.stop="
+                                        openCreateProjectModalFun(project)
+                                    "
+                                >
+                                    <i
+                                        class="mdi mdi-square-edit-outline cursor-pointer text-primary"
+                                    ></i>
+                                    <span
+                                        class="hover:underline cursor-pointer"
+                                    >
+                                        Edit
+                                    </span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
+                    <tr
+                        v-if="!projects.data.length && search"
+                        rowspan="12"
+                        class="justify-end bg-white"
+                    >
+                        <th colspan="12" class="font-medium">
+                            <NoDataFound message="No results found " />
+                        </th>
+                    </tr>
                 </table>
+                <div v-else>
+                    <NoDataFound
+                        class="border border-light-gray-200"
+                        message="No projects have been created yet."
+                    />
+                </div>
             </div>
         </template>
     </AuthenticatedLayout>
 
     <Modal
+        @close="openCreateProjectModal = false"
         max-width="md"
         :show="openCreateProjectModal"
-        @close="closeModalAndResetFrom"
         :title="projectToEdit ? 'Update Project' : 'Create Project'"
     >
-        <form @submit.prevent="createProject">
-            <div class="p-4">
-                <div>
-                    <InputLabel
-                        for="name"
-                        value="name"
-                        :error="form.errors.name"
-                    />
-
-                    <TextInput
-                        id="name"
-                        type="text"
-                        class="w-full"
-                        v-model="form.name"
-                        required
-                        :message="form.errors.name"
-                        autofocus
-                    />
-                </div>
-            </div>
-            <div class="border-t border-light-gray-200 min-h-[55px] mt-3">
-                <div class="p-4 py-3">
-                    <PrimaryButton type="submit"> Save</PrimaryButton>
-                </div>
-            </div>
-        </form>
+        <CreateOrUpdateProjectForm
+            @showToaster="handelToasterMessage"
+            :orgId="orgId"
+            @close="openCreateProjectModal = false"
+            :project="projectToEdit"
+        />
     </Modal>
 </template>
+<style></style>
