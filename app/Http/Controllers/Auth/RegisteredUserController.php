@@ -13,7 +13,7 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\invitations;
-use App\RoleEnum;
+use App\Enums\RoleEnum;
 class RegisteredUserController extends Controller
 {
     /**
