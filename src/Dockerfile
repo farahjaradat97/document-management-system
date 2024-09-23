@@ -1,22 +1,21 @@
-FROM richarvey/nginx-php-fpm:latest
+FROM php:8.2.0-fpm-alpine
 COPY . .
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN docker-php-ext-install pdo pdo_mysql
 
-
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN mkdir -p /var/www/html && chown -R appuser:appgroup /var/www/html
+# Copy application source
+COPY ./src /var/www/html
+WORKDIR /var/www/html
 # Image config
-ENV SKIP_COMPOSER 1
-ENV WEBROOT /var/www/html/public
-ENV PHP_ERRORS_STDERR 1
-ENV RUN_SCRIPTS 1
-ENV REAL_IP_HEADER 1
 
-# Laravel config
-ENV APP_ENV production
-ENV APP_DEBUG false
-ENV LOG_CHANNEL stderr
+RUN chown -R appuser:appgroup /var/www/html/storage
+RUN chown -R appuser:appgroup /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage
+RUN chmod -R 775 /var/www/html/bootstrap/cache
 
-# Allow composer to run as root
-ENV COMPOSER_ALLOW_SUPERUSER 1
+# Switch to non-root user
+USER appuser
 
-CMD ["/start.sh"]
