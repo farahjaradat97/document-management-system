@@ -11,7 +11,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 RUN mkdir -p /var/www/html && chown -R appuser:appgroup /var/www/html
-COPY ./src /var/www/html
+COPY . /var/www/html
 WORKDIR /var/www/html
 RUN chown -R appuser:appgroup /var/www/html/storage
 RUN chown -R appuser:appgroup /var/www/html/bootstrap/cache
